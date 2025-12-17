@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rekomendasi Kesehatan - RasaKu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fdfbf7;
+            --surface: #ffffff;
+            --text: #1a202c;
+            --text-light: #64748b;
+            --primary: #ff6b35;
+            --primary-dark: #e85a2b;
+            --accent: #ffa726;
+            --success: #10b981;
+            --danger: #ef4444;
+            --health: #06b6d4;
+            --health-light: #22d3ee;
+            --radius: 20px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(34, 211, 238, 0.03) 100%);
+            z-index: -1;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 32px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffa726 50%, #ffd54f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover { color: var(--primary); background: rgba(255, 107, 53, 0.1); }
+        .nav-link.active { color: var(--health); background: rgba(6, 182, 212, 0.1); }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px 80px;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--health), var(--health-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.3);
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--health), var(--health-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        /* Flash Messages */
+        .flash-container { margin-bottom: 24px; }
+
+        .flash {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .flash-success { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .flash-info { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+
+        /* Health Summary Card */
+        .health-summary {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(6, 182, 212, 0.1);
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .summary-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--health);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: rgba(6, 182, 212, 0.2);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            background: rgba(6, 182, 212, 0.05);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Tags */
+        .tags-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(6, 182, 212, 0.1);
+        }
+
+        .tags-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-preferred {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .tag-avoided {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        /* Recipe Grid */
+        .recipe-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .recipe-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .recipe-content {
+            padding: 24px;
+        }
+
+        .recipe-category {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--health), var(--health-light));
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .recipe-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .recipe-desc {
+            color: var(--text-light);
+            font-size: 14px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .recipe-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Health Match Badge */
+        .health-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--health);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--health), var(--health-light));
+            color: white;
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 24px;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .container { padding: 24px 20px 60px; }
+
+            .page-title { font-size: 28px; }
+
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="brand">RasaKu</a>
+        <div class="nav-menu">
+            <a href="{{ url_for('home') }}" class="nav-link">Beranda</a>
+            <a href="{{ url_for('favorit') }}" class="nav-link">Favorit</a>
+            <a href="{{ url_for('rekomendasi_personal') }}" class="nav-link">Rekomendasi</a>
+            <a href="{{ url_for('rekomendasi_cuaca') }}" class="nav-link">Cuaca</a>
+            <a href="{{ url_for('rekomendasi_kesehatan') }}" class="nav-link active">Kesehatan</a>
+            <a href="{{ url_for('profile') }}" class="nav-link">Profil</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="page-icon">&#129657;</div>
+            <h1 class="page-title">Rekomendasi Kesehatan</h1>
+            <p class="page-subtitle">Resep yang disesuaikan dengan kondisi kesehatan dan preferensi diet Anda</p>
+        </div>
+
+        <!-- Health Summary -->
+        <div class="health-summary">
+            <div class="summary-header">
+                <h2 class="summary-title">
+                    <span>&#128203;</span> Profil Kesehatan Anda
+                </h2>
+                <a href="{{ url_for('profil_kesehatan') }}" class="edit-btn">
+                    <span>&#9998;</span> Edit Profil
+                </a>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Tujuan Diet</div>
+                    <div class="summary-value">{{ health_summary.diet_goal }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Tingkat Aktivitas</div>
+                    <div class="summary-value">{{ health_summary.activity_level }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Preferensi Diet</div>
+                    <div class="summary-value">{{ health_summary.diet_preference }}</div>
+                </div>
+                {% if health_summary.health_conditions %}
+                <div class="summary-item">
+                    <div class="summary-label">Kondisi Kesehatan</div>
+                    <div class="summary-value">{{ health_summary.health_conditions | join(', ') }}</div>
+                </div>
+                {% endif %}
+                {% if health_summary.allergies %}
+                <div class="summary-item">
+                    <div class="summary-label">Alergi</div>
+                    <div class="summary-value">{{ health_summary.allergies | join(', ') }}</div>
+                </div>
+                {% endif %}
+                {% if health_summary.nutrient_preferences %}
+                <div class="summary-item">
+                    <div class="summary-label">Preferensi Nutrisi</div>
+                    <div class="summary-value">{{ health_summary.nutrient_preferences | join(', ') }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Keywords Tags -->
+            <div class="tags-section">
+                {% if health_keywords.preferred %}
+                <div style="margin-bottom: 16px;">
+                    <div class="tags-title">&#10003; Bahan yang Direkomendasikan:</div>
+                    <div class="tags-container">
+                        {% for keyword in health_keywords.preferred[:10] %}
+                        <span class="tag tag-preferred">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if health_keywords.avoided %}
+                <div>
+                    <div class="tags-title">&#10007; Bahan yang Dihindari:</div>
+                    <div class="tags-container">
+                        {% for keyword in health_keywords.avoided[:10] %}
+                        <span class="tag tag-avoided">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recipe Recommendations -->
+        <h2 class="recipe-section-title">Resep yang Cocok untuk Anda</h2>
+
+        {% if rekomendasi %}
+        <div class="recipe-grid">
+            {% for resep in rekomendasi %}
+            <a href="{{ url_for('detail_resep', nama_resep=resep['nama_resep']) }}" class="recipe-card">
+                <img src="{{ resep['gambar'] }}" alt="{{ resep['nama_resep'] }}" class="recipe-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+                <div class="recipe-content">
+                    <span class="recipe-category">{{ resep['kategori'] }}</span>
+                    <h3 class="recipe-title">{{ resep['nama_resep'] }}</h3>
+                    <p class="recipe-desc">{{ resep['deskripsi'] }}</p>
+                    <div class="recipe-meta">
+                        <span class="recipe-meta-item">
+                            <span>&#128337;</span> {{ resep['waktu_masak'] }}
+                        </span>
+                        <span class="recipe-meta-item">
+                            <span>&#128293;</span> {{ resep['tingkat_kesulitan'] }}
+                        </span>
+                        <span class="health-badge">
+                            <span>&#129657;</span> Cocok
+                        </span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#128532;</div>
+            <h3 class="empty-title">Tidak Ada Resep Ditemukan</h3>
+            <p class="empty-text">Maaf, tidak ada resep yang cocok dengan profil kesehatan Anda saat ini. Coba sesuaikan preferensi Anda.</p>
+            <a href="{{ url_for('profil_kesehatan') }}" class="btn btn-primary">
+                <span>&#9998;</span> Edit Profil Kesehatan
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
